@@ -48,10 +48,11 @@ import (
 
 // Request ...
 type Request struct {
-	Jsonrpc string     `json:"jsonrpc"`
-	Method  string     `json:"method"`
-	Params  Parameters `json:"params"`
-	ID      string     `json:"id"`
+	Jsonrpc   string     `json:"jsonrpc"`
+	Method    string     `json:"method"`
+	Streaming bool       `json:"streaming"`
+	Params    Parameters `json:"params"`
+	ID        string     `json:"id"`
 }
 
 // Parameters ...
@@ -225,8 +226,9 @@ func (handle *EapiReqHandle) clearCommands() {
 // with that commands response.
 //
 // Returns:
-//  error if handle is invalid, or problem encountered during sending or
-//  receiveing.
+//
+//	error if handle is invalid, or problem encountered during sending or
+//	receiveing.
 func (handle *EapiReqHandle) Call() error {
 	if err := handle.checkHandle(); err != nil {
 		return err
@@ -251,7 +253,7 @@ func (handle *EapiReqHandle) Call() error {
 	commands := handle.getAllCommands()
 
 	jsonrsp, err := handle.node.conn.Execute(commands, handle.encoding)
-        
+
 	if err != nil {
 		return err
 	}
@@ -264,7 +266,8 @@ func (handle *EapiReqHandle) Call() error {
 // Enable takes an EapiCommand type to issue toward the Node.
 // Decoded results are stored in the EapiCommand.
 // Returns:
-//  error on failure
+//
+//	error on failure
 func (handle *EapiReqHandle) Enable(v EapiCommand) error {
 	if err := handle.AddCommand(v); err != nil {
 		return err
@@ -317,12 +320,12 @@ func (handle *EapiReqHandle) parseResponse(resp *JSONRPCResponse) error {
 			continue
 		}
 
-                d, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{ TagName: "json", Result: cmd.EapiCommand })
-                if err != nil {
+		d, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{TagName: "json", Result: cmd.EapiCommand})
+		if err != nil {
 			return err
-                } 
+		}
 
-                err = d.Decode(result)
+		err = d.Decode(result)
 		if err != nil {
 			return err
 		}
