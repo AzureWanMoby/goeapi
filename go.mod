@@ -1,4 +1,4 @@
-module github.com/aristanetworks/goeapi
+module github.com/AzureWanMoby/goeapi
 
 go 1.17
 
